@@ -24,8 +24,8 @@
 exports.handler = function( event, context ) {
     var https = require( 'https' );
     // Paste app code here between the breaks------------------------------------------------
-var STappID = 'ca1d4cc6-1370-43b3-ab0d-ba7e967a82f9';
-var STtoken = 'ba092265-134e-4804-9ec4-d43765eb2997';
+var STappID = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+var STtoken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 var url='https://graph.api.smartthings.com:443/api/smartapps/installations/' + STappID + '/' ;
     //---------------------------------------------------------------------------------------
         var cardName ="";
