@@ -108,8 +108,8 @@ def initialize() {
 	}
 }
 def getURLs(){
-	def mName = params.mName, url = formatURL("${getApiServerUrl()}/api/smartapps/installations/${app.id}/m?Macro=${mName}&access_token=${state.accessToken}")
-    def result = "<div style='padding:10px'>Copy the URL below and paste it to your control application.</div><div style='padding:10px'>Click '<' above to return to the Ask Alexa SmartApp.</div>"
+	def Name = params.Name, url = formatURL("${getApiServerUrl()}/api/smartapps/installations/${app.id}/&access_token=${state.accessToken}")
+    def result = "<div style='padding:10px'>Copy the URL below and paste it to your control application.</div><div style='padding:10px'>Click '<' above to return to the Alexa Speaks SmartApp.</div>"
 	result += "<div style='padding:10px;'><b>Macro REST URL:</b></div>"
 	result += "<textarea rows='5' style='width: 99%'>${url}</textarea>"
 	result += "<hr>"
@@ -118,9 +118,7 @@ def getURLs(){
 def setupData(){
 	log.info "Set up web page located at : ${getApiServerUrl()}/api/smartapps/installations/${app.id}/setup?access_token=${state.accessToken}"
     def result ="<div style='padding:10px'><i><b><a href='http://aws.amazon.com' target='_blank'>Lambda</a> code variables:</b></i><br><br>var STappID = '${app.id}';<br>var STtoken = '${state.accessToken}';<br>"
-    result += "var url='${getApiServerUrl()}/api/smartapps/installations/' + STappID + '/' ;<br><br><hr>"
-	result += "<i><b><a href='http://developer.amazon.com' target='_blank'>Amazon ASK</a> Custom Slot Information:</b></i><br><br><b>CANCEL_CMDS</b><br><br>cancel<br>stop<br>unschedule<br><br><b>DEVICE_TYPE_LIST</b><br><br>"
-		}
+    result += "var url='${getApiServerUrl()}/api/smartapps/installations/' + STappID + '/' ;<br><br><hr><br><br>"}
 mappings {
       path("/r") {action: [GET: "readData"]}
       path("/w") {action: [GET: "writeData"]}
