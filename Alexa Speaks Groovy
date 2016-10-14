@@ -138,7 +138,7 @@ def readData() {
 def processTts() {
 	def tts = params.ttstext
 	if (synthDevice) synthDevice.speak("Excuse me: "+ tts)
-    if (mediaDevice) mediaDevice.speak("Excuse Me: "+ tts)
+    if (mediaDevice) mediaDevice.play("Excuse Me: "+ tts)
 }
 //Common Code
 def OAuthToken(){
