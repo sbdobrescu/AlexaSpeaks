@@ -95,12 +95,14 @@ def pageReset(){
 	  }
 }
 def installed() {
-	log.debug "Installed with settings: ${settings}"
-	initialize()
+log.debug "Installed with settings: ${settings}"
+log.trace "STappID = '${app.id}' , STtoken = '${state.accessToken}'"
+initialize()
 }
 def updated() {
-	log.debug "Updated with settings: ${settings}"
-	initialize()
+log.debug "Updated with settings: ${settings}"
+log.trace "STappID = '${app.id}' , STtoken = '${state.accessToken}'"
+initialize()
 }
 def initialize() {
 	if (!state.accessToken) {
