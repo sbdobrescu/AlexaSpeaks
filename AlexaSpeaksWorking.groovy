@@ -2,17 +2,20 @@
  *  Alexa Speaks
  *
  *
- *  10/14/2016  version 0.0.1c		Added Sonos support and OAuth tokens to logs for copy and paste
+ *  10/15-2016	version 0.0.1d		Added custom "Pre-messages", UI changes
+ * 	10/14/2016  version 0.0.1c		Added Sonos support and OAuth tokens to logs for copy and paste
  *	10/11/2016	version 0.0.1b		Fixed audio output for both media and synth
  *	10/10/2016 	Version 0.0.1a		Added media player support
  *	10/09/2016	Version 0.0.1		Initial File
  *
  /******************* ROADMAP ********************
-  - Message beginning "Excuse Me" customizable and optional
+  + Message beginning "Excuse Me" customizable and optional
   - Sonos - pause, restore, and restart track and playlist after message (options section)
   - TTS pause toggle (possibly for parent/child app config)
   - Alexa give confirmation... OK, Done, Roger Dodger, etc... custom confirmation as well
   - Github integration
+  - Access Token Website
+  - Restrictions
  *
  *
  *
@@ -73,13 +76,23 @@ def pageAudioDevices(){
 }
 def pageInstallOptions(){
 	dynamicPage(name: "pageInstallOptions", uninstall: false) {
-        section("Rename App"){
-        	label title:"Rename App (Optional)", required:false, defaultValue: "Alexa Speaks"
-    	}
-       	section ("Modes - "){
+    	section ("Pre-Message"){
+   //     	section {paragraph 
+		
+    	input "ShowPreMsg", "bool", title: "Enable Custom Pre-Message", default: false, submitOnChange: true
+        if (!ShowPreMsg && PreMsg1) paragraph "To disable the pre-message you must uncheck the response you chose."
+        if (!ShowPreMsg && PreMsg2) paragraph "To disable the custom message you must delete the your custom input."
+    	if (ShowPreMsg) input "PreMsg1", "enum", title: "Pre-Message Attention Notification", options:[ "Excuse Me", "Attention please", "Roger Dodger", "Hey, you. Yes you"], required:false, multiple:false, defaultValue: ""
+        if (ShowPreMsg) input "PreMsg2", "text", title: "Custom Pre-Message Attention Notification", defaultValue: "", required: false
+        }
+        section ("Modes - "){
      				}
         section("More to come soon!!!!"){
-		}
+		}        
+        section("Rename App"){
+        	label title:"Rename App (Optional)", required:false, defaultValue: "Alexa Speaks"
+    		
+        }
     }
 }
 def pageAbout(){
@@ -157,18 +170,28 @@ def readData() {
 }
 def processTts() {
 	def tts = params.ttstext
-	tts = "Excuse me: "+ tts
-		if (synthDevice) synthDevice.speak(tts)
+//	tts = PreMsg + tts
+    	if (PreMsg1 && synthDevice) synthDevice.speak(PreMsg1 + tts)
+		else if (PreMsg2 && synthDevice) synthDevice.speak(PreMsg2 + tts)
+        else if (!PreMsg1 && ! PreMsg2 && synthDevice) synthDevice.speak(tts)
 		if (tts) {
 			state.sound = textToSpeech(tts instanceof List ? tts[0] : tts) // not sure why this is (sometimes) needed)
 		}
 		else {
 			state.sound = textToSpeech("You selected the custom message option but did not enter a message in the $app.label Smart App")
 		}
-		if (mediaDevice) {
+		if (PreMsg1 && mediaDevice) {
 			mediaDevice.playTrackAndResume(state.sound.uri, state.sound.duration, volume)
 			log.trace "${state.sound}"
-	}
+        if (PreMsg2 && mediaDevice) 
+			mediaDevice.playTrackAndResume(state.sound.uri, state.sound.duration, volume)
+			log.trace "${state.sound}"
+        if (!PreMsg1 && !PreMsg2 && mediaDevice)
+			mediaDevice.playTrackAndResume(state.sound.uri, state.sound.duration, volume)
+			log.trace "${state.sound}"
+			
+        
+    }
 }
 //Common Code
 def OAuthToken(){
