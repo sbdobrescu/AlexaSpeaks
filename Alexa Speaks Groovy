@@ -66,24 +66,22 @@ def pageAbout(){
 }
 def pageConfiguration(){
     dynamicPage(name: "pageConfiguration", title: "Configuration", uninstall: true){
-        section("Free-Form Text-to-Speech / On = app is active       Off = app is paused"){
-        	input "freeSpeak", "bool", title: "Send Free-Form Text-to-Speech", defaultValue: false, submitOnChange: true
-        }
-        section("Media Player output devices"){
-            if (freeSpeak) input "mediaDevice", "capability.musicPlayer", title: "Choose Playback Device(s)", multiple: true, required: false, submitOnChange: true
-            if (freeSpeak) input "Playback Volume", "number", title: "Speaker Volume", description: "0-100%", required: false
-        }
-        section("Speech Synthesizer output devices"){
-            if (freeSpeak) input "synthDevice", "capability.speechSynthesis", title: "Choose Playback Device(s)", multiple: true, required: false, submitOnChange: true
-        }
-        section("Security Settings"){
+		section("Media Player Devices (Sonos, wi-fi, etc...)"){
+       		input "mediaDevice", "capability.musicPlayer", title: "Choose Speaker(s)", multiple: true, required: false, submitOnChange: true
+       	 	input "volume", "number", title: "Speaker Volume", description: "0-100%", required: false
+    	}
+        section("Speech Synthesizer Devices (LanDroid, etc...)"){
+        	input "synthDevice", "capability.speechSynthesis", title: "Choose Speaker(s)", multiple: true, required: false, submitOnChange: true
+    	}
+			section("Security Settings"){
             href "pageReset", title: "Reset Access Token", description: "Tap to revoke access token."
         }
         section("Rename App"){
         	label title:"Rename App (Optional)", required:false, defaultValue: "Alexa Speaks"
-    	  }
+    	 	}
+        }
     }
-}
+
 def pageReset(){
 	dynamicPage(name: "pageReset", title: "Access Token Reset"){
         section{
@@ -137,10 +135,25 @@ def readData() {
     log.debug "Command received with params $params"
 	def label = params.l		//The name given to the device by you
 }
+//def processTts() {
+//	def tts = params.ttstext
+//	if (synthDevice) synthDevice.speak("Excuse me: " + tts)
+//    if (mediaDevice) mediaDevice.playSoundAndTrack("Excuse me:" + tts)
+//}
 def processTts() {
 	def tts = params.ttstext
-	if (synthDevice) synthDevice.speak("Excuse me: "+ tts)
-    if (mediaDevice) mediaDevice.playSoundAndTrack("Excuse me: " + tts)
+	tts = "Excuse me: "+ tts
+		if (synthDevice) synthDevice.speak(tts)
+		if (tts) {
+			state.sound = textToSpeech(tts instanceof List ? tts[0] : tts) // not sure why this is (sometimes) needed)
+		}
+		else {
+			state.sound = textToSpeech("You selected the custom message option but did not enter a message in the $app.label Smart App")
+		}
+		if (mediaDevice) {
+			mediaDevice.playTrackAndResume(state.sound.uri, state.sound.duration, volume)
+			log.trace "${state.sound}"
+	}
 }
 //Common Code
 def OAuthToken(){
