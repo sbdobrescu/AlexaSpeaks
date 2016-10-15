@@ -6,7 +6,16 @@
  *	10/11/2016	version 0.0.1b		Fixed audio output for both media and synth
  *	10/10/2016 	Version 0.0.1a		Added media player support
  *	10/09/2016	Version 0.0.1		Initial File
- * 
+ *
+ /******************* ROADMAP ********************
+  - Message beginning "Excuse Me" customizable and optional
+  - Sonos - pause, restore, and restart track and playlist after message (options section)
+  - TTS pause toggle (possibly for parent/child app config)
+  - Alexa give confirmation... OK, Done, Roger Dodger, etc... custom confirmation as well
+  - Github integration
+ *
+ *
+ *
  *
  *  Copyright 2016 Jason Headley
  *
@@ -31,43 +40,28 @@ definition(
     iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
 preferences {
     page name:"mainPage"
-    page name:"pageReset"
+    page name:"pageInstallData"
     page name:"pageAbout"
     page name:"pageConfiguration"
+    page name:"pageReset"
 }
 //Show main page
 def mainPage() {
-    dynamicPage(name: "mainPage", title:"Alexa Speaks", install: true, uninstall: false) {
-        section("Options") {
-			href "pageConfiguration", title: "Configuration", description: none, 
+    dynamicPage(name: "mainPage", title:"                       Alexa Speaks", install: true, uninstall: false) {
+        section("") {
+			href "pageConfiguration", title: "Configuration", description: "Tap here for configuration options", 
             	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
-  				image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
-			href "pageAbout", title: "About ${textAppName()}", description: "Tap to get application version, license, instructions or remove the application",
+            href "pageInstallData", title: "Install Data", description: "Tap here to get the Access Token, Application ID, instructions, and to remove the application",
+  			 	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
+            href "pageAbout", title: "About ${textAppName()}", description: "Tap to get application version and license information",
+            	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
+           	 href "pageReset", title: "Security Token Reset/Revoke", description: "WARNING: Only tap here to reset/revoke the current Security Token.  If you tap here you must reset the token in your Lambda Code",  
             	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
         }
-	  }
-}
-def pageAbout(){
-	dynamicPage(name: "pageAbout", uninstall: true) {
-        section {
-        	paragraph "${textAppName()}\n${textVersion()}\n${textCopyright()}",image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
-        }
-        section ("Access Token / Application ID"){
-            if (!state.accessToken) {
-				OAuthToken()
-			}
-            def msg = state.accessToken != null ? state.accessToken : "Could not create Access Token. OAuth may not be enabled. Go to the SmartApp IDE settings to enable OAuth."
-            paragraph "\nAccess Token:\n${msg}\n\nApplication ID:\n${app.id}"
-    	}
-        section ("Apache License"){
-        	paragraph textLicense()
-        }
-        section("Tap button below to remove the application"){
-        }
-	  }
+	}
 }
 def pageConfiguration(){
-    dynamicPage(name: "pageConfiguration", title: "Configuration", uninstall: true){
+    dynamicPage(name: "pageConfiguration", title: "Configuration", uninstall: false){
 		section("Media Player Devices (Sonos, wi-fi, etc...)"){
        		input "mediaDevice", "capability.musicPlayer", title: "Choose Speaker(s)", multiple: true, required: false, submitOnChange: true
        	 	input "volume", "number", title: "Speaker Volume", description: "0-100%", required: false
@@ -75,25 +69,53 @@ def pageConfiguration(){
         section("Speech Synthesizer Devices (LanDroid, etc...)"){
         	input "synthDevice", "capability.speechSynthesis", title: "Choose Speaker(s)", multiple: true, required: false, submitOnChange: true
     	}
-			section("Security Settings"){
-            href "pageReset", title: "Reset Access Token", description: "Tap to revoke access token."
-        }
         section("Rename App"){
         	label title:"Rename App (Optional)", required:false, defaultValue: "Alexa Speaks"
-    	 	}
+    	}
+	}
+}
+def pageInstallData(){
+	dynamicPage(name: "pageInstallData", uninstall: true) {
+        section {
+        	paragraph "${textAppName()}\n${textVersion()}\n${textCopyright()}",image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
         }
+       	section ("Access Token / Application ID"){
+     		if (!state.accessToken)
+            if (!state.accessToken) {
+			OAuthToken()
+		}
+            def msg = state.accessToken != null ? state.accessToken : "Could not create Access Token. OAuth may not be enabled. Go to the SmartApp IDE settings to enable OAuth."
+            paragraph "\nAccess Token:\n${msg}\n\nApplication ID:\n${app.id}"
+	   	}
+        section("Tap button below to remove the application"){
+		}
     }
-
+}
+def pageAbout(){
+	dynamicPage(name: "pageAbout", uninstall: false) {
+        section {
+        	paragraph "${textAppName()}\n${textVersion()}\n${textCopyright()}",image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
+        }
+        section ("Apache License"){
+        	input "ShowLicense", "bool", title: "Show License", default: false, submitOnChange: true
+            def msg = textLicense()
+            if (ShowLicense) paragraph "${msg}"
+     	}  		
+	}		
+} 
 def pageReset(){
-	dynamicPage(name: "pageReset", title: "Access Token Reset"){
+	dynamicPage(name: "pageReset", title: "Access Token Reset", uninstall: false){
         section{
-			state.accessToken = null
+			revokeAccessToken()
+            state.accessToken = null
             OAuthToken()
             def msg = state.accessToken != null ? "New access token:\n${state.accessToken}\n\nClick 'Done' above to return to the previous menu." : "Could not reset Access Token. OAuth may not be enabled. Go to the SmartApp IDE settings to enable OAuth."
 	    	paragraph "${msg}"
-		    }
-	  }
+       	}
+	}
 }
+
+
 def installed() {
 log.debug "Installed with settings: ${settings}"
 log.trace "STappID = '${app.id}' , STtoken = '${state.accessToken}'"
