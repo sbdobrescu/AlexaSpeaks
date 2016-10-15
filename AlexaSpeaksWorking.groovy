@@ -40,55 +40,45 @@ definition(
     iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
 preferences {
     page name:"mainPage"
-    page name:"pageInstallData"
-    	page name:"pageSpeakers"
+    page name:"pageAudioDevices"    
+    page name:"pageInstallOptions"
     page name:"pageAbout"
-    page name:"pageConfiguration"
     page name:"pageReset"
 }
 //Show main page
 def mainPage() {
-    dynamicPage(name: "mainPage", title:"                       Alexa Speaks", install: true, uninstall: false) {
+    dynamicPage(name: "mainPage", title:"                      Alexa Speaks", install: true, uninstall: false) {
         section("") {
-			href "pageConfiguration", title: "Configuration", description: "Tap here for configuration options", 
+			href "pageAudioDevices", title: "Audio Playback Devices", description: "Tap here for to choose your audio playback devices", 
             	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
-            href "pageInstallData", title: "Install Data", description: "Tap here to get the Access Token, Application ID, instructions, and to remove the application",
+            href "pageInstallOptions", title: "Install Options", description: "Tap here to configure installed application options",
   			 	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
-            href "pageAbout", title: "About ${textAppName()}", description: "Tap to get application version and license information",
+            href "pageAbout", title: "About ${textAppName()}", description: "Tap to get version, license information, and to remove the app",
             	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
            	 href "pageReset", title: "Security Token Reset/Revoke", description: "WARNING: Only tap here to reset/revoke the current Security Token.  If you tap here you must reset the token in your Lambda Code",  
             	image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
          }
 	}
 }
-def pageConfiguration(){
-    dynamicPage(name: "pageConfiguration", title: "Configuration", uninstall: false){
+def pageAudioDevices(){
+    dynamicPage(name: "pageAudioDevices", title: "Audio Playback Devices", uninstall: false){
     	section("Media Player Devices (Sonos, wi-fi, etc...)", hideWhenEmpty: true){
 			input "mediaDevice", "capability.musicPlayer", title: "Choose Speaker(s)", multiple: true, required: false, submitOnChange: true
        		input "volume", "number", title: "Speaker Volume", description: "0-100%", required: false
         }
-        section("Speech Synthesizer Devices (LanDroid, etc...)"){
+        section("Speech Synthesizer Devices (LanDroid, etc...)", hideWhenEmpty: true){
         	input "synthDevice", "capability.speechSynthesis", title: "Choose Speaker(s)", multiple: true, required: false, submitOnChange: true
-    	}
-        section("Rename App"){
-        	label title:"Rename App (Optional)", required:false, defaultValue: "Alexa Speaks"
     	}
 	}
 }
-def pageInstallData(){
-	dynamicPage(name: "pageInstallData", uninstall: true) {
-        section {
-        	paragraph "${textAppName()}\n${textVersion()}\n${textCopyright()}", image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png"
-        }
-       	section ("Access Token / Application ID"){
-     		if (!state.accessToken)
-            if (!state.accessToken) {
-			OAuthToken()
-		}
-            def msg = state.accessToken != null ? state.accessToken : "Could not create Access Token. OAuth may not be enabled. Go to the SmartApp IDE settings to enable OAuth."
-            paragraph "\nAccess Token:\n${msg}\n\nApplication ID:\n${app.id}"
-	   	}
-        section("Tap button below to remove the application"){
+def pageInstallOptions(){
+	dynamicPage(name: "pageInstallOptions", uninstall: false) {
+        section("Rename App"){
+        	label title:"Rename App (Optional)", required:false, defaultValue: "Alexa Speaks"
+    	}
+       	section ("Modes - "){
+     				}
+        section("More to come soon!!!!"){
 		}
     }
 }
