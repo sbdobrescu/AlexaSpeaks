@@ -1,9 +1,11 @@
 /**
  *  Alexa Speaks
  *
- *	10/09/2016	Version 0.0.1		Initial File
- *	10/10/2016 	Version 0.0.1a		Added media player support
+ *
+ *  10/14/2016  version 0.0.1c		Added Sonos support and OAuth tokens to logs for copy and paste
  *	10/11/2016	version 0.0.1b		Fixed audio output for both media and synth
+ *	10/10/2016 	Version 0.0.1a		Added media player support
+ *	10/09/2016	Version 0.0.1		Initial File
  *
  *
  *  Copyright 2016 Jason Headley
@@ -135,11 +137,6 @@ def readData() {
     log.debug "Command received with params $params"
 	def label = params.l		//The name given to the device by you
 }
-//def processTts() {
-//	def tts = params.ttstext
-//	if (synthDevice) synthDevice.speak("Excuse me: " + tts)
-//    if (mediaDevice) mediaDevice.playSoundAndTrack("Excuse me:" + tts)
-//}
 def processTts() {
 	def tts = params.ttstext
 	tts = "Excuse me: "+ tts
@@ -169,7 +166,7 @@ private def textAppName() {
 	def text = "Alexa Speaks"
 }	
 private def textVersion() {
-    def text = "Version 1.0.0 (10/08/2016)"
+    def text = "Version 0.0.1c (10/14/2016)"
 }
 private def textCopyright() {
     def text = "Copyright © 2016 Jason Headley"
