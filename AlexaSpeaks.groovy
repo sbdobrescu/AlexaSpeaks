@@ -16,6 +16,8 @@
   - Github integration
   - Access Token Website
   - Restrictions
+  - Repeat last message upon request
+  - Play through TV and mute TV
  *
  *
  *
